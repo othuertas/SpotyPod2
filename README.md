@@ -13,7 +13,7 @@ SpotyPod2 automates the process of:
 
 ## Prerequisites
 
-- Python 3.7 or higher
+- Python 3.7 or higher (tested with Python 3.9+)
 - [Exportify](https://exportify.net/) - to export Spotify playlists to CSV
 - [SpotDL](https://github.com/spotDL/spotify-downloader) - for downloading songs
 - Apple Music or iTunes - for importing playlists to sync to iPod

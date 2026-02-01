@@ -8,10 +8,11 @@ import os
 import subprocess
 import argparse
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
 from mutagen.id3 import ID3NoHeaderError
+from mutagen import MutagenError
 
 
 class PlaylistItem:
@@ -33,7 +34,7 @@ class SpotyPod:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
     
-    def read_exportify_csv(self, csv_path: str) -> tuple[str, List[PlaylistItem]]:
+    def read_exportify_csv(self, csv_path: str) -> Tuple[str, List[PlaylistItem]]:
         """
         Read a playlist from an Exportify CSV file
         
@@ -94,7 +95,7 @@ class SpotyPod:
                 '--format', 'mp3'
             ]
             print(f"Running: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=3600)
             
             if result.returncode != 0:
                 print(f"SpotDL stderr: {result.stderr}")
@@ -102,6 +103,8 @@ class SpotyPod:
             print(f"SpotDL output: {result.stdout}")
         except FileNotFoundError:
             print("Warning: spotdl not found. Please install it with: pip install spotdl")
+        except subprocess.TimeoutExpired:
+            print("Warning: SpotDL download timed out after 1 hour")
         
         # Clean up queries file
         queries_file.unlink(missing_ok=True)
@@ -125,7 +128,7 @@ class SpotyPod:
                 'artist': audio.get('artist', [''])[0],
                 'album': audio.get('album', [''])[0],
             }
-        except (ID3NoHeaderError, Exception) as e:
+        except (ID3NoHeaderError, MutagenError) as e:
             print(f"Warning: Could not read metadata from {file_path}: {e}")
             return {'title': '', 'artist': '', 'album': ''}
     
