@@ -232,15 +232,16 @@ class SpotyPod:
         # Print summary
         print(f"\n{'='*60}")
         print(f"M3U Playlist Generation Summary:")
-        print(f"  ✓ Matched correctly: {matched_count} tracks")
-        print(f"  ⚠ Corrected mismatches: {mismatch_count} tracks")
-        print(f"  ✗ Missing files: {missing_count} tracks")
-        print(f"  Total in playlist: {matched_count + mismatch_count} tracks")
+        print(f"  ✓ Matched correctly: {matched_count} {'track' if matched_count == 1 else 'tracks'}")
+        print(f"  ⚠ Corrected mismatches: {mismatch_count} {'track' if mismatch_count == 1 else 'tracks'}")
+        print(f"  ✗ Missing files: {missing_count} {'track' if missing_count == 1 else 'tracks'}")
+        print(f"  Total in playlist: {matched_count + mismatch_count} {'track' if (matched_count + mismatch_count) == 1 else 'tracks'}")
         print(f"{'='*60}")
         print(f"\nM3U playlist saved to: {m3u_path}")
         
         if mismatch_count > 0:
-            print(f"\nNote: {mismatch_count} track(s) had metadata mismatches.")
+            track_word = 'track' if mismatch_count == 1 else 'tracks'
+            print(f"\nNote: {mismatch_count} {track_word} had metadata mismatches.")
             print("The M3U playlist has been corrected to use the actual file metadata")
             print("to ensure proper recognition when imported into Apple Music/iTunes.")
         

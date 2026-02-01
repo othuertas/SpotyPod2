@@ -127,12 +127,12 @@ Checking metadata and correcting playlist entries...
 ============================================================
 M3U Playlist Generation Summary:
   ✓ Matched correctly: 2 tracks
-  ⚠ Corrected mismatches: 1 tracks
+  ⚠ Corrected mismatches: 1 track
   ✗ Missing files: 0 tracks
   Total in playlist: 3 tracks
 ============================================================
 
-Note: 1 track(s) had metadata mismatches.
+Note: 1 track had metadata mismatches.
 The M3U playlist has been corrected to use the actual file metadata
 to ensure proper recognition when imported into Apple Music/iTunes.
 ```
