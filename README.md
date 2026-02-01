@@ -102,16 +102,21 @@ output/
   playlist_name.m3u
 ```
 
-### Metadata Checking
-The program compares the metadata in:
-- The Exportify CSV (what you intended to download)
-- The actual downloaded MP3 files (what was actually downloaded)
+### Metadata Checking and Correction
 
-Any mismatches are reported so you can verify the downloads are correct.
+The program performs intelligent metadata verification:
+
+1. **Compares CSV vs. File Metadata**: Checks the expected metadata from your Exportify CSV against the actual metadata in the downloaded MP3 files
+2. **Detects Mismatches**: Identifies when SpotDL downloads a different version (e.g., "Song Title" vs. "Song Title (Remastered)")
+3. **Auto-Corrects the M3U**: Automatically uses the **actual file metadata** in the M3U playlist instead of the CSV metadata
+4. **Reports Changes**: Shows you exactly what was corrected and why
+
+**Why this matters**: When you import the M3U into Apple Music/iTunes, it needs to match the actual song metadata in the files. If the M3U says "Song Title" but the file contains "Song Title (Remastered)", Apple Music won't recognize the song properly. By correcting the M3U to match the actual files, everything imports smoothly.
 
 ### M3U Generation
+
 An M3U playlist file is created with:
-- Corrected metadata based on actual downloaded files
+- **Corrected metadata** based on actual downloaded files (not CSV expectations)
 - Absolute file paths for Apple Music/iTunes compatibility
 - Extended M3U format with track information
 

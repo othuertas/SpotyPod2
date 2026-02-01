@@ -106,6 +106,43 @@ The generated `.m3u` file looks like:
 /full/path/to/output/my_playlist/Another Artist - Another Song.mp3
 ```
 
+### Console Output Example
+
+When processing a playlist, you'll see output like this:
+
+```
+Processing playlist from: my_playlist.csv
+Loaded playlist 'my_playlist' with 3 tracks
+
+Generating M3U playlist: output/my_playlist.m3u
+Found 3 downloaded files
+Expected 3 tracks from CSV
+
+Checking metadata and correcting playlist entries...
+  ⚠ Metadata mismatch detected:
+    CSV Expected: 'Bohemian Rhapsody'
+    File Contains: 'Bohemian Rhapsody (Remastered 2011)'
+    → M3U will use: 'Bohemian Rhapsody (Remastered 2011)' (from file)
+
+============================================================
+M3U Playlist Generation Summary:
+  ✓ Matched correctly: 2 tracks
+  ⚠ Corrected mismatches: 1 tracks
+  ✗ Missing files: 0 tracks
+  Total in playlist: 3 tracks
+============================================================
+
+Note: 1 track(s) had metadata mismatches.
+The M3U playlist has been corrected to use the actual file metadata
+to ensure proper recognition when imported into Apple Music/iTunes.
+```
+
+This clearly shows:
+- Which tracks matched perfectly
+- Which tracks had metadata differences
+- What corrections were applied
+- The final M3U uses the **actual file metadata** for proper Apple Music recognition
+
 ## Common Scenarios
 
 ### Metadata Mismatches
@@ -114,11 +151,24 @@ The generated `.m3u` file looks like:
 
 **Example Output:**
 ```
-Metadata mismatch - CSV: 'Song Title' vs File: 'Song Title (Remastered)'
-Artist mismatch - CSV: 'Band Name' vs File: 'Band Name & Friends'
+⚠ Metadata mismatch detected:
+  CSV Expected: 'Song Title'
+  File Contains: 'Song Title (Remastered)'
+  → M3U will use: 'Song Title (Remastered)' (from file)
 ```
 
-**Solution:** The M3U uses the actual file metadata, so the playlist will still work correctly. Review the mismatches to ensure you got the right songs.
+**What This Means:**
+- Your Exportify CSV listed "Song Title"
+- SpotDL downloaded "Song Title (Remastered)" instead
+- The M3U playlist has been **automatically corrected** to use the actual file metadata
+
+**Why It's Corrected:**
+When you import the M3U into Apple Music/iTunes, it needs to match the actual song files. If the M3U said "Song Title" but the file contains "Song Title (Remastered)", Apple Music wouldn't recognize the song. By correcting the M3U to match the file, everything imports smoothly.
+
+**What You Should Do:**
+- Review the mismatches to ensure you got the right songs
+- The playlist will work correctly in Apple Music/iTunes because it matches the actual files
+- If you got the wrong song, delete it, manually download the correct one, and re-run with `--no-download`
 
 ### Missing Songs
 

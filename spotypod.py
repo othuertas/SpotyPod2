@@ -137,6 +137,11 @@ class SpotyPod:
         """
         Generate an M3U playlist file with metadata checking and correction
         
+        This method compares the metadata from the CSV (expected) against the actual
+        downloaded files. If mismatches are found, the M3U playlist is created using
+        the ACTUAL file metadata to ensure songs are properly recognized when imported
+        into Apple Music/iTunes.
+        
         Args:
             playlist_name: Name of the playlist
             playlist_dir: Directory containing downloaded songs
@@ -153,6 +158,11 @@ class SpotyPod:
         print(f"\nGenerating M3U playlist: {m3u_path}")
         print(f"Found {len(downloaded_files)} downloaded files")
         print(f"Expected {len(playlist_items)} tracks from CSV")
+        print(f"\nChecking metadata and correcting playlist entries...")
+        
+        mismatch_count = 0
+        matched_count = 0
+        missing_count = 0
         
         with open(m3u_path, 'w', encoding='utf-8') as f:
             f.write("#EXTM3U\n")
@@ -183,24 +193,57 @@ class SpotyPod:
                     # Get actual metadata from the file
                     metadata = self.get_file_metadata(matched_file)
                     
-                    # Write M3U entry with corrected metadata
-                    # Use file metadata if available, otherwise use CSV data
+                    # IMPORTANT: Use file metadata (not CSV) to ensure proper recognition
+                    # When Apple Music imports the M3U, it needs to match the actual file metadata
                     title = metadata['title'] or item.track_name
                     artist = metadata['artist'] or item.artist
                     
+                    # Write M3U entry with the corrected (actual file) metadata
                     # EXTINF format: #EXTINF:duration,artist - title
                     f.write(f"#EXTINF:-1,{artist} - {title}\n")
                     f.write(f"{matched_file.absolute()}\n")
                     
-                    # Check for mismatches
+                    # Check for mismatches and report them
+                    has_mismatch = False
                     if metadata['title'] and metadata['title'].lower() != item.track_name.lower():
-                        print(f"  Metadata mismatch - CSV: '{item.track_name}' vs File: '{metadata['title']}'")
+                        print(f"  ⚠ Metadata mismatch detected:")
+                        print(f"    CSV Expected: '{item.track_name}'")
+                        print(f"    File Contains: '{metadata['title']}'")
+                        print(f"    → M3U will use: '{title}' (from file)")
+                        has_mismatch = True
                     if metadata['artist'] and metadata['artist'].lower() != item.artist.lower():
-                        print(f"  Artist mismatch - CSV: '{item.artist}' vs File: '{metadata['artist']}'")
+                        if not has_mismatch:
+                            print(f"  ⚠ Metadata mismatch detected:")
+                            print(f"    CSV Expected: '{item.artist}'")
+                        else:
+                            print(f"    CSV Expected artist: '{item.artist}'")
+                        print(f"    File Contains: '{metadata['artist']}'")
+                        print(f"    → M3U will use: '{artist}' (from file)")
+                        has_mismatch = True
+                    
+                    if has_mismatch:
+                        mismatch_count += 1
+                    else:
+                        matched_count += 1
                 else:
-                    print(f"  Warning: Could not find downloaded file for: {item}")
+                    print(f"  ✗ Warning: Could not find downloaded file for: {item}")
+                    missing_count += 1
         
-        print(f"M3U playlist saved to: {m3u_path}")
+        # Print summary
+        print(f"\n{'='*60}")
+        print(f"M3U Playlist Generation Summary:")
+        print(f"  ✓ Matched correctly: {matched_count} tracks")
+        print(f"  ⚠ Corrected mismatches: {mismatch_count} tracks")
+        print(f"  ✗ Missing files: {missing_count} tracks")
+        print(f"  Total in playlist: {matched_count + mismatch_count} tracks")
+        print(f"{'='*60}")
+        print(f"\nM3U playlist saved to: {m3u_path}")
+        
+        if mismatch_count > 0:
+            print(f"\nNote: {mismatch_count} track(s) had metadata mismatches.")
+            print("The M3U playlist has been corrected to use the actual file metadata")
+            print("to ensure proper recognition when imported into Apple Music/iTunes.")
+        
         return m3u_path
     
     def process_playlist(self, csv_path: str, download: bool = True) -> Path:
