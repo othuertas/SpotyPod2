@@ -1,0 +1,13 @@
+# SpotyPod2 Configuration
+# Copy this file to config.ini and customize as needed
+
+[Settings]
+# Default output directory for downloaded playlists and M3U files
+output_dir = output
+
+# Audio format for downloads (mp3, m4a, etc.)
+audio_format = mp3
+
+# SpotDL additional options (comma-separated)
+# Example: --bitrate 320k,--lyrics
+spotdl_options = 
