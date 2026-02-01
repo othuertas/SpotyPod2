@@ -38,6 +38,8 @@ pip install spotdl
 
 ## Usage
 
+For detailed examples and use cases, see [USAGE_EXAMPLES.md](USAGE_EXAMPLES.md).
+
 ### Step 1: Export Spotify Playlist
 
 1. Go to [Exportify](https://exportify.net/)
